@@ -16,7 +16,7 @@ namespace Data.Models
         /// Gets or sets the unique identifier for the message.
         /// </summary>
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the content of the message.

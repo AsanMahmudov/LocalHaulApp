@@ -19,7 +19,7 @@ namespace Data.Models
         /// This is the primary key for the 'Products' table.
         /// </summary>
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the title of the product listing.
