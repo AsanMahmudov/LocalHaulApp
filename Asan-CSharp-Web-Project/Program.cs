@@ -1,4 +1,4 @@
-using Asan_CSharp_Web_Project.Data;
+
 using Data;
 using Data.Models;
 using Microsoft.AspNetCore.Identity;
@@ -103,4 +103,5 @@ namespace Asan_CSharp_Web_Project
 
             }
         }
+    }
 }

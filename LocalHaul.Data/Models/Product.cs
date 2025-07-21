@@ -12,6 +12,7 @@ namespace Data.Models
     /// <summary>
     /// Represents a product listing available for sale in the OLXClone application.
     /// </summary>
+
     public class Product
     {
         /// <summary>
@@ -19,7 +20,7 @@ namespace Data.Models
         /// This is the primary key for the 'Products' table.
         /// </summary>
         [Key]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } // Changed to Guid
 
         /// <summary>
         /// Gets or sets the title of the product listing.
@@ -46,7 +47,7 @@ namespace Data.Models
         /// Gets or sets the foreign key for the Category the product belongs to.
         /// This links to the 'Categories' table.
         /// </summary>
-        public int CategoryId { get; set; }
+        public Guid CategoryId { get; set; } // Changed to Guid
 
         /// <summary>
         /// Gets or sets the navigation property to the associated Category entity.
@@ -69,5 +70,12 @@ namespace Data.Models
         /// This represents a one-to-many relationship with the 'Images' table.
         /// </summary>
         public ICollection<Image> Images { get; set; } = new List<Image>();
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the product listing is soft-deleted.
+        /// </summary>
+        public bool IsDeleted { get; set; } = false;
     }
+
+
 }

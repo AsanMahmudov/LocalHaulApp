@@ -47,7 +47,16 @@ namespace Data.Configurations
             builder.HasOne(p => p.Seller)
                 .WithMany(u => u.Products)
                 .HasForeignKey(p => p.SellerId)
-                .OnDelete(DeleteBehavior.Cascade); // Delete products if seller is deleted
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Soft Delete Configuration for Product
+            builder.Property(p => p.IsDeleted)
+                .IsRequired()
+                .HasDefaultValue(false)
+                .HasComment("Indicates if the product listing has been soft-deleted.");
+
+            // Global Query Filter: Exclude soft-deleted products by default
+            builder.HasQueryFilter(p => !p.IsDeleted);
         }
     }
 }

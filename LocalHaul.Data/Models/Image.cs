@@ -16,7 +16,7 @@ namespace Data.Models
         /// Gets or sets the unique identifier for the image.
         /// </summary>
         [Key]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } // Changed to Guid
 
         /// <summary>
         /// Gets or sets the file path or URL of the image.
@@ -26,7 +26,7 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the foreign key for the Product this image belongs to.
         /// </summary>
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; } // Changed to Guid
 
         /// <summary>
         /// Gets or sets the navigation property to the associated Product entity.

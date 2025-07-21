@@ -14,6 +14,8 @@ namespace Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Message> builder)
         {
+            builder.HasComment("Stores messages exchanged between users, typically related to a product.");
+
             builder.Property(m => m.Content)
                 .IsRequired()
                 .HasMaxLength(ValidationConstants.Message.ContentMaxLength)
@@ -47,7 +49,7 @@ namespace Data.Configurations
             builder.HasOne(m => m.Product)
                 .WithMany() // No navigation property back from Product to Message for simplicity
                 .HasForeignKey(m => m.ProductId)
-                .OnDelete(DeleteBehavior.SetNull); // Set ProductId to null if product is deleted
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

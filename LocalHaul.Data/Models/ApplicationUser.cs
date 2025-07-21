@@ -41,5 +41,10 @@ namespace Data.Models
         /// Gets or sets the collection of messages received by this user.
         /// </summary>
         public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user account is soft-deleted.
+        /// </summary>
+        public bool IsDeleted { get; set; } = false;
     }
 }

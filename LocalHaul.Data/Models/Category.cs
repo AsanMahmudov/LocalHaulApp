@@ -17,7 +17,7 @@ namespace Data.Models
         /// This is the primary key for the 'Categories' table.
         /// </summary>
         [Key]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } // Changed to Guid
 
         /// <summary>
         /// Gets or sets the name of the category.
@@ -28,5 +28,10 @@ namespace Data.Models
         /// Gets or sets the collection of products belonging to this category.
         /// </summary>
         public ICollection<Product> Products { get; set; } = new List<Product>();
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the category is soft-deleted.
+        /// </summary>
+        public bool IsDeleted { get; set; } = false;
     }
 }
