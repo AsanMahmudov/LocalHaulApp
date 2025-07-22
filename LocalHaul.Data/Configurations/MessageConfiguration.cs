@@ -13,9 +13,7 @@ namespace Data.Configurations
     internal class MessageConfiguration : IEntityTypeConfiguration<Message>
     {
         public void Configure(EntityTypeBuilder<Message> builder)
-        {
-            builder.HasComment("Stores messages exchanged between users, typically related to a product.");
-
+        {            
             builder.Property(m => m.Content)
                 .IsRequired()
                 .HasMaxLength(ValidationConstants.Message.ContentMaxLength)

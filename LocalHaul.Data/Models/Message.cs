@@ -21,7 +21,7 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the content of the message.
         /// </summary>
-        public string Content { get; set; }
+        public string Content { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the date and time when the message was sent.
@@ -31,22 +31,22 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the foreign key for the sender of the message.
         /// </summary>
-        public string SenderId { get; set; }
+        public string SenderId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the navigation property to the sender (ApplicationUser) entity.
         /// </summary>
-        public ApplicationUser Sender { get; set; }
+        public ApplicationUser Sender { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the foreign key for the receiver of the message.
         /// </summary>
-        public string ReceiverId { get; set; }
+        public string ReceiverId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the navigation property to the receiver (ApplicationUser) entity.
         /// </summary>
-        public ApplicationUser Receiver { get; set; }
+        public ApplicationUser Receiver { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the foreign key for the product this message is related to.
@@ -56,7 +56,7 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the navigation property to the associated Product entity.
         /// </summary>
-        public Product Product { get; set; }
+        public Product Product { get; set; } = null!;
     }
 
 }

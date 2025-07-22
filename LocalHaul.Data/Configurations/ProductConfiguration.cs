@@ -10,7 +10,6 @@ namespace Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
-            builder.HasComment("Represents a product listing posted by a user for sale.");
 
             builder.Property(p => p.Title)
                 .IsRequired()

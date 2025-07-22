@@ -13,21 +13,6 @@ namespace Data.Models
     public class ApplicationUser : IdentityUser
     {
         /// <summary>
-        /// Gets or sets the user's first name.
-        /// </summary>
-        public string FirstName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user's last name.
-        /// </summary>
-        public string LastName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the city where the user is located.
-        /// </summary>
-        public string City { get; set; }
-
-        /// <summary>
         /// Gets or sets the collection of products posted by this user.
         /// </summary>
         public ICollection<Product> Products { get; set; } = new List<Product>();

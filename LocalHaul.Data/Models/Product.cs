@@ -25,12 +25,12 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the title of the product listing.
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the detailed description of the product.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the price of the product.
@@ -52,18 +52,18 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the navigation property to the associated Category entity.
         /// </summary>
-        public Category Category { get; set; }
+        public Category Category { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the foreign key for the User (Seller) who posted the product.
         /// This links to the 'AspNetUsers' table (ApplicationUser).
         /// </summary>
-        public string SellerId { get; set; }
+        public string SellerId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the navigation property to the ASP.NET Identity User (Seller) entity.
         /// </summary>
-        public ApplicationUser Seller { get; set; }
+        public ApplicationUser Seller { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the collection of images associated with this product.

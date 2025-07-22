@@ -21,7 +21,7 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the file path or URL of the image.
         /// </summary>
-        public string ImagePath { get; set; }
+        public string ImagePath { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the foreign key for the Product this image belongs to.
@@ -31,6 +31,6 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the navigation property to the associated Product entity.
         /// </summary>
-        public Product Product { get; set; }
+        public Product Product { get; set; } = null!;
     }
 }

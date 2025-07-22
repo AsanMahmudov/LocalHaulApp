@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(LocalHaulDbContext))]
-    partial class LocalHaulDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250721181815_CityOfApplicationUserBecomesNullable")]
+    partial class CityOfApplicationUserBecomesNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,6 +33,11 @@ namespace Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasComment("The city where the user is located.");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -41,11 +49,23 @@ namespace Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("The first name of the user.");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false)
                         .HasComment("Indicates if the user account is soft-deleted.");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("The last name of the user.");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -90,23 +110,29 @@ namespace Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers", null, t =>
+                        {
+                            t.HasComment("Extends the default ASP.NET Identity user with custom application-specific properties.");
+                        });
 
                     b.HasData(
                         new
                         {
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb0",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c445414a-69cc-4deb-82d8-8495ad69932d",
+                            City = "Sofia",
+                            ConcurrencyStamp = "3782179a-c730-4e43-b163-094fef296752",
                             Email = "admin@localHaul.com",
                             EmailConfirmed = true,
+                            FirstName = "System",
                             IsDeleted = false,
+                            LastName = "Administrator",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHAUL.COM",
                             NormalizedUserName = "ADMIN@LOCALHAUL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEE/noswfxVhUKWoNPQH8hYc+1mQpCZ8clJQ0/x/7dSSQNS7sjFlmHbvLL/lFslLg7Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOxqaDb9nPFfV6KRFo2lW/cpRyi0k/pYEjncAPCqFkmRIsxAYVrI9QjFqKltOD4VzA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ef97fe2f-3ce4-4a5e-ba33-92b8dc9dfc83",
+                            SecurityStamp = "797f49a4-8bcb-4d69-b697-a7c98bb6208d",
                             TwoFactorEnabled = false,
                             UserName = "admin@localHaul.com"
                         },
@@ -114,16 +140,19 @@ namespace Data.Migrations
                         {
                             Id = "9e224968-3b4f-4f80-9b6e-4493d048cdb0",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "683c1e3a-83e5-4f51-8e2b-c3b87adcf255",
+                            City = "Plovdiv",
+                            ConcurrencyStamp = "8ff65d19-9649-4482-826c-7d3b572a7c37",
                             Email = "user@localHaul.com",
                             EmailConfirmed = true,
+                            FirstName = "Regular",
                             IsDeleted = false,
+                            LastName = "User",
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@LOCALHAUL.COM",
                             NormalizedUserName = "USER@LOCALHAUL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHdJU6FXYBrdYTsOvEb4Pfus+m45Q90SV+D/wX/Br8DJC4g9ovuNr/gyGOqJOfR9BA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKnasXjYPjw8/ajezwAaAVArpzXmGdp02/9XSr9bu0tT85FlH8dZl/6voBN7NtvbEA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2f1e8ae9-e813-4424-b18a-224fb0c7b304",
+                            SecurityStamp = "bc85e24a-7685-4510-b6bd-cfa161cc72b9",
                             TwoFactorEnabled = false,
                             UserName = "user@localHaul.com"
                         });
@@ -257,7 +286,10 @@ namespace Data.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", t =>
+                        {
+                            t.HasComment("Stores messages exchanged between users, typically related to a product.");
+                        });
                 });
 
             modelBuilder.Entity("Data.Models.Product", b =>
@@ -307,7 +339,10 @@ namespace Data.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", t =>
+                        {
+                            t.HasComment("Represents a product listing posted by a user for sale.");
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

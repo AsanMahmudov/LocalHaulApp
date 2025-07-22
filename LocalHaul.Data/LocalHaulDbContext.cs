@@ -62,10 +62,7 @@ namespace Data
                 NormalizedEmail = "ADMIN@LOCALHAUL.COM",
                 EmailConfirmed = true,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                ConcurrencyStamp = Guid.NewGuid().ToString(),
-                FirstName = "System",
-                LastName = "Administrator",
-                City = "Sofia"
+                ConcurrencyStamp = Guid.NewGuid().ToString()
             };
             adminUser.PasswordHash = hasher.HashPassword(adminUser, "AdminPass123!"); // Password hash generation
 
@@ -80,10 +77,7 @@ namespace Data
                 NormalizedEmail = "USER@LOCALHAUL.COM",
                 EmailConfirmed = true,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                ConcurrencyStamp = Guid.NewGuid().ToString(),
-                FirstName = "Regular",
-                LastName = "User",
-                City = "Plovdiv"
+                ConcurrencyStamp = Guid.NewGuid().ToString()
             };
             regularUser.PasswordHash = hasher.HashPassword(regularUser, "UserPass123!"); // Password hash generation
 

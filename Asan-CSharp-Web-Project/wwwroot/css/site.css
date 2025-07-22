@@ -20,3 +20,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.border-top{
+    position: absolute;
+    bottom: 0px;
+}
+

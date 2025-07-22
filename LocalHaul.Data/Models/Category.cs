@@ -22,7 +22,7 @@ namespace Data.Models
         /// <summary>
         /// Gets or sets the name of the category.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the collection of products belonging to this category.
