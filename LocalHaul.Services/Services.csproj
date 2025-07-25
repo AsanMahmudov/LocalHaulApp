@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LocalHaul.Data\Data.csproj" />
     <ProjectReference Include="..\LocalHaul.GlobalCommon\GlobalCommon.csproj" />
+	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
 </Project>
