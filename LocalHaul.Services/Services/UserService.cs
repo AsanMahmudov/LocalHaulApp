@@ -1,4 +1,7 @@
-﻿using Data.Models;
+﻿using Data;
+using Data.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,34 +13,75 @@ namespace Services.Services
 {
     public class UserService : IUserService
     {
-        public Task<bool> ChangeUserRolesAsync(string userId, IEnumerable<string> roles)
+        private readonly LocalHaulDbContext _dbContext;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        public UserService(
+            LocalHaulDbContext dbContext,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
-        public Task<IEnumerable<ApplicationUser>> GetAllUsersForAdminNoQueryFilterAsync()
+        public async Task<ApplicationUser> GetUserProfileAsync(string userId)
         {
-            throw new NotImplementedException();
+            return await _userManager.FindByIdAsync(userId);
         }
 
-        public Task<ApplicationUser> GetUserProfileAsync(string userId)
+        public async Task<bool> UpdateUserProfileAsync(ApplicationUser user)
         {
-            throw new NotImplementedException();
+            var existingUser = await _userManager.FindByIdAsync(user.Id);
+            if (existingUser == null)
+            {
+                return false;
+            }
+
+            var result = await _userManager.UpdateAsync(existingUser);
+            return result.Succeeded;
         }
 
-        public Task RestoreUserAsync(string userId)
+        public async Task<IEnumerable<ApplicationUser>> GetAllUsersForAdminNoQueryFilterAsync()
         {
-            throw new NotImplementedException();
+            return await _dbContext.Users.IgnoreQueryFilters().ToListAsync();
         }
 
-        public Task SoftDeleteUserAsync(string userId)
+        public async Task<bool> ChangeUserRolesAsync(string userId, IEnumerable<string> roles)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles.Except(roles));
+            var addResult = await _userManager.AddToRolesAsync(user, roles.Except(currentRoles));
+
+            return removeResult.Succeeded && addResult.Succeeded;
         }
 
-        public Task<bool> UpdateUserProfileAsync(ApplicationUser user)
+        public async Task SoftDeleteUserAsync(string userId)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                user.IsDeleted = true;
+                var result = await _userManager.UpdateAsync(user);
+            }
+        }
+
+        public async Task RestoreUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                user.IsDeleted = false;
+                var result = await _userManager.UpdateAsync(user);
+            }
         }
     }
 }
