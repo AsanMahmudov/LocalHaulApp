@@ -3,6 +3,8 @@ using Data;
 using Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Services.Interfaces;
+using Services.Services;
 
 namespace Asan_CSharp_Web_Project
 {
@@ -41,6 +43,11 @@ namespace Asan_CSharp_Web_Project
                     })
                     .AddRoles<IdentityRole>() // Use your custom ApplicationRole here
                     .AddEntityFrameworkStores<LocalHaulDbContext>(); // Correct: Identity uses LocalHaulDbContext
+
+                builder.Services.AddScoped<IProductService, ProductService>();
+                builder.Services.AddScoped<ICategoryService, CategoryService>();
+                builder.Services.AddScoped<IMessageService, MessageService>();
+                builder.Services.AddScoped<IUserService, UserService>();
 
                 builder.Services.AddControllersWithViews();
                 builder.Services.AddRazorPages();
