@@ -77,4 +77,4 @@ namespace Services.Interfaces
         Task HardDeleteProductAsync(Guid id);
     }
 }
-}
+

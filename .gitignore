@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/LocalHaul.Services/Class1.cs
+/LocalHaul.Services/Class1.cs
