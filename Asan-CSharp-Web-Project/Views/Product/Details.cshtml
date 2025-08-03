@@ -1,0 +1,142 @@
+﻿@using Asan_CSharp_Web_Project.ViewModels 
+@model Asan_CSharp_Web_Project.ViewModels.ProductDetailsViewModel
+
+@{
+    ViewData["Title"] = @Model.Title; // Set page title dynamically
+    Layout = "_Layout"; // Explicitly set layout if not default for views folder
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9fa; /* Light background */
+    }
+    .product-card-details {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        padding: 2.5rem;
+    }
+    .product-image-main {
+        width: 100%;
+        max-height: 500px; /* Adjusted max height */
+        object-fit: contain; /* Ensures entire image is visible */
+        border-radius: 8px;
+        background-color: #e9ecef; /* Placeholder background */
+    }
+    .product-image-thumbnail {
+        width: 100px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out, border 0.2s ease-in-out;
+        border: 2px solid transparent;
+    }
+    .product-image-thumbnail:hover,
+    .product-image-thumbnail.active {
+        transform: translateY(-3px);
+        border-color: #007bff; /* Primary color */
+    }
+    .price-display {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #007bff; /* Primary brand color */
+    }
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1 class="display-4 fw-bold">@Model.Title</h1>
+        </div>
+    </div>
+
+    <div class="product-card-details">
+        <div class="row">
+            <!-- Product Image Gallery (left side) -->
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="text-center mb-3">
+                    @if (Model.ImagePaths != null && Model.ImagePaths.Any())
+                    {
+                        <img id="mainProductImage" src="@Model.ImagePaths.First()" class="product-image-main img-fluid" alt="@Model.Title">
+                    }
+                    else
+                    {
+                        <img id="mainProductImage" src="https://placehold.co/800x600/dee2e6/6c757d?text=No+Image" class="product-image-main img-fluid" alt="No Image Available">
+                    }
+                </div>
+                <!-- Thumbnail gallery -->
+                @if (Model.ImagePaths != null && Model.ImagePaths.Any())
+                {
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                        @foreach (var imagePath in Model.ImagePaths)
+                        {
+                            <img src="@imagePath" class="product-image-thumbnail" alt="Product Thumbnail" data-main-image="@imagePath">
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Product Details (right side) -->
+            <div class="col-lg-6">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="price-display">@Model.Price.ToString("C")</span>
+                    <!-- You can add edit/delete buttons here based on user authorization -->
+                </div>
+
+                <h2 class="section-title">Description</h2>
+                <p class="lead text-secondary mb-4">
+                    @Model.Description
+                </p>
+
+                <h2 class="section-title">Product Information</h2>
+                <dl class="row mb-4">
+                    <dt class="col-sm-4 text-muted">Category:</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.CategoryName</dd>
+
+                    <dt class="col-sm-4 text-muted">Posted By:</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.SellerUserName</dd>
+
+                    <dt class="col-sm-4 text-muted">Posted Date:</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.PostedDate.ToString("MM/dd/yyyy")</dd>
+                </dl>
+
+                <div class="d-grid gap-3">
+                    <a href="#" class="btn btn-primary btn-lg rounded-pill shadow-sm">Contact Seller</a>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary btn-lg rounded-pill">Back to Listings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainImage = document.getElementById('mainProductImage');
+            const thumbnails = document.querySelectorAll('.product-image-thumbnail');
+
+            thumbnails.forEach(thumb => {
+                thumb.addEventListener('click', function() {
+                    mainImage.src = this.dataset.mainImage; // Use data-main-image for clarity
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Set first thumbnail as active initially if there are images
+            if (thumbnails.length > 0) {
+                thumbnails[0].classList.add('active');
+            }
+        });
+    </script>
+}

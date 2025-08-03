@@ -1,6 +1,6 @@
-﻿@using Asan_CSharp_Web_Project.ViewModels
+﻿@using Asan_CSharp_Web_Project.ViewModels 
+@model Asan_CSharp_Web_Project.ViewModels.ProductListModel 
 
-@model ProductListModel 
 @{
     ViewData["Title"] = "Product Listings";
     Layout = "_Layout"; // Explicitly set layout if not default for views folder
@@ -18,12 +18,12 @@
 
 <main class="container">
     <div class="search-filter-bar mb-5">
-        <form asp-controller="Product" asp-action="Index" method="get" class="row g-3 align-items-center"> @* Updated form action *@
+        <form asp-controller="Product" asp-action="Index" method="get" class="row g-3 align-items-center">
             <div class="col-md-5">
-                <input type="text" asp-for="SearchTerm" class="form-control form-control-lg" placeholder="Search products..."> @* Removed .ProductListModel *@
+                <input type="text" asp-for="SearchTerm" class="form-control form-control-lg" placeholder="Search products...">
             </div>
             <div class="col-md-4">
-                <select asp-for="SelectedCategoryId" asp-items="@Model.Categories" class="form-select form-select-lg"> @* Removed .ProductListModel *@
+                <select asp-for="SelectedCategoryId" asp-items="@Model.Categories" class="form-select form-select-lg">
                     <option value="">All Categories</option>
                     <!-- Options populated from Model.Categories -->
                 </select>
@@ -34,7 +34,14 @@
         </form>
     </div>
 
-    @if (!Model.Products.Any()) @* Removed .ProductListModel *@
+    <div class="text-center mb-4">
+        <!-- Button to trigger the Create Product Modal -->
+        <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#createProductModal" id="createProductModalBtn">
+            <i class="bi bi-plus-circle me-2"></i> Create New Product
+        </button>
+    </div>
+
+    @if (!Model.Products.Any())
     {
         <div class="alert alert-info text-center py-4 rounded-3 shadow-sm" role="alert">
             <h4 class="alert-heading">No Products Found!</h4>
@@ -44,7 +51,7 @@
     else
     {
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            @foreach (var product in Model.Products) @* Removed .ProductListModel *@
+            @foreach (var product in Model.Products)
             {
                 <div class="col">
                     <div class="product-card">
@@ -61,13 +68,8 @@
                             <p class="product-meta">Category: <span class="fw-semibold">@product.Category?.Name</span> | Posted by: <span class="fw-semibold">@product.Seller?.UserName</span></p>
                             <span class="product-price">@product.Price.ToString("C")</span>
                             <div class="d-grid mt-3">
-                                {{ product.Images.First().ImagePath | img_tag(class_name: "card-img-top product-card-img", alt_text: product.Title) if product.Images.any else img_tag(src: "https://placehold.co/600x400/cccccc/333333?text=No+Image", class_name: "card-img-top product-card-img", alt_text: "No Image Available") }}
-                                <h5 class="product-title">@product.Title</h5>
-                                <p class="product-meta">Category: <span class="fw-semibold">@product.Category?.Name</span> | Posted by: <span class="fw-semibold">@product.Seller?.UserName</span></p>
-                                <span class="product-price">@product.Price.ToString("C")</span>
-                                <div class="d-grid mt-3">
-                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn btn-outline-primary btn-view-details">View Details</a> @* Changed to MVC routing *@
-                                </div>
+                                <!-- This button correctly links to the Product Details page -->
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn btn-outline-primary btn-view-details">View Details</a>
                             </div>
                         </div>
                     </div>
@@ -82,7 +84,54 @@
 </footer>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!-- Bootstrap Icons (Optional, for plus-circle icon) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Create Product Modal Structure -->
+    <div class="modal fade" id="createProductModal" tabindex="-1" aria-labelledby="createProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createProductModalLabel">Create New Product Listing</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="createProductModalBody">
+                    <!-- Partial view will be loaded here via JavaScript -->
+                    Loading form...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to load the partial view into the modal body when the modal is shown
+        document.addEventListener('DOMContentLoaded', function () {
+            var createProductModal = document.getElementById('createProductModal');
+            createProductModal.addEventListener('show.bs.modal', function (event) {
+                var modalBody = createProductModal.querySelector('#createProductModalBody');
+                // Load the partial view into the modal body
+                fetch('@Url.Action("Create", "Product", new { isPartial = true })') // Pass a flag to the controller
+                    .then(response => response.text())
+                    .then(html => {
+                        modalBody.innerHTML = html;
+                        // Re-parse validation scripts for the new content
+                        // This is crucial for client-side validation to work on dynamically loaded forms
+                        if (window.jQuery && $.validator && $.validator.unobtrusive) {
+                            $.validator.unobtrusive.parse(modalBody);
+                        }
+                    })
+                    .catch(error => {
+                        modalBody.innerHTML = '<div class="alert alert-danger">Error loading form. Please try again.</div>';
+                        console.error('Error loading create product form:', error);
+                    });
+            });
+
+            // Optional: If you want to handle the form submission from the modal via AJAX
+            // (e.g., to stay on the same page and just update the product list),
+            // you would add more JavaScript here to intercept the form submission.
+            // For now, the form in the partial view will submit normally, causing a full page refresh.
+        });
+    </script>
 }
