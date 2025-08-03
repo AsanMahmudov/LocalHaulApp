@@ -70,81 +70,90 @@ namespace Asan_CSharp_Web_Project.Controllers
         }
 
 
-        //    /// <summary>
-        //    /// Displays the detailed information for a single product listing.
-        //    /// </summary>
-        //    /// <param name="id">The unique identifier of the product.</param>
-        //    /// <returns>A view displaying product details or a NotFound result if the product does not exist or is soft-deleted.</returns>
-        //    [HttpGet]
-        //    public async Task<IActionResult> Details(Guid id)
-        //    {
-        //        var product = await _productService.GetProductByIdAsync(id);
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var product = await _productService.GetProductByIdAsync(id);
 
-        //        if (product == null) // Global query filter handles IsDeleted = true
-        //        {
-        //            return NotFound();
-        //        }
+            if (product == null) // Global query filter handles IsDeleted = true
+            {
+                return NotFound();
+            }
 
-        //        return View(product);
-        //    }
+            // Map the Product entity to the ProductDetailsViewModel
+            var viewModel = new ProductDetailsViewModel
+            {
+                Id = product.Id,
+                Title = product.Title,
+                Description = product.Description,
+                Price = product.Price,
+                PostedDate = product.PostedDate,
+                // Assuming lazy loading is enabled or you explicitly include these in GetProductByIdAsync
+                CategoryName = product.Category?.Name,
+                SellerUserName = product.Seller?.UserName,
+                SellerId = product.SellerId,
+                ImagePaths = product.Images?.Select(i => i.ImagePath).ToList() ?? new List<string>()
+            };
 
-        //    /// <summary>
-        //    /// Displays the form for creating a new product listing.
-        //    /// Requires user to be logged in.
-        //    /// </summary>
-        //    /// <returns>A view with the product creation form.</returns>
-        //    [HttpGet]
-        //    [Authorize] // Only authenticated users can create products
-        //    public async Task<IActionResult> Create()
-        //    {
-        //        var categories = await _categoryService.GetAllCategoriesAsync();
-        //        var viewModel = new ProductCreateViewModel
-        //        {
-        //            Categories = categories.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = c.Id.ToString(), Text = c.Name })
-        //        };
-        //        return View(viewModel);
-        //    }
+            return View(viewModel); // Pass the ProductDetailsViewModel to the view
+        }
+        /// <summary>
+        /// Displays the form for creating a new product listing.
+        /// Requires user to be logged in.
+        /// </summary>
+        /// <returns>A view with the product creation form.</returns>
+        [HttpGet]
+            [Authorize] // Only authenticated users can create products
+            public async Task<IActionResult> Create()
+            {
+                var categories = await _categoryService.GetAllCategoriesAsync();
+                var viewModel = new ProductCreateViewModel
+                {
+                    Categories = categories.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                };
+                return View(viewModel);
+            }
 
-        //    /// <summary>
-        //    /// Handles the submission of the new product listing form.
-        //    /// </summary>
-        //    /// <param name="model">The view model containing product data and uploaded image.</param>
-        //    /// <returns>Redirects to product listings on success, or redisplays form with errors.</returns>
-        //    [HttpPost]
-        //    [Authorize]
-        //    [ValidateAntiForgeryToken] // Prevents Cross-Site Request Forgery attacks
-        //    public async Task<IActionResult> Create(ProductCreateViewModel model)
-        //    {
-        //        if (!ModelState.IsValid)
-        //        {
-        //            // If validation fails, re-populate categories and return to view
-        //            model.Categories = (await _categoryService.GetAllCategoriesAsync())
-        //                                .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = c.Id.ToString(), Text = c.Name });
-        //            return View(model);
-        //        }
+        /// <summary>
+        /// Handles the submission of the new product listing form.
+        /// </summary>
+        /// <param name="model">The view model containing product data and uploaded image.</param>
+        /// <returns>Redirects to product listings on success, or redisplays form with errors.</returns>
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken] // Prevents Cross-Site Request Forgery attacks
+        public async Task<IActionResult> Create(ProductCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // If validation fails, re-populate categories and return to view
+                model.Categories = (await _categoryService.GetAllCategoriesAsync())
+                                    .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = c.Id.ToString(), Text = c.Name });
+                return View(model);
+            }
 
-        //        // Get the current logged-in user's ID
-        //        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            // Get the current logged-in user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        //        // Create a Product entity from the view model
-        //        var product = new Product
-        //        {
-        //            Id = Guid.NewGuid(), // Generate new GUID for product
-        //            Title = model.Title,
-        //            Description = model.Description,
-        //            Price = model.Price,
-        //            CategoryId = model.CategoryId,
-        //            SellerId = userId,
-        //            PostedDate = DateTime.UtcNow,
-        //            IsDeleted = false // New products are not soft-deleted by default
-        //        };
+            // Create a Product entity from the view model
+            var product = new Product
+            {
+                Id = Guid.NewGuid(), // Generate new GUID for product
+                Title = model.Title,
+                Description = model.Description,
+                Price = model.Price,
+                CategoryId = model.CategoryId,
+                SellerId = userId,
+                PostedDate = DateTime.UtcNow,
+                IsDeleted = false // New products are not soft-deleted by default
+            };
 
-        //        // Pass the product entity and the IFormFile to the service for saving
-        //        await _productService.CreateProductAsync(product, model.ImageFile);
+            // Pass the product entity and the IFormFile to the service for saving
+            await _productService.CreateProductAsync(product, model.ImageFile);
 
-        //        TempData["SuccessMessage"] = "Product created successfully!"; // Optional: Success message
-        //        return RedirectToAction(nameof(Index));
-        //    }
+            TempData["SuccessMessage"] = "Product created successfully!"; // Optional: Success message
+            return RedirectToAction(nameof(Index));
+        }
 
         //    /// <summary>
         //    /// Displays the form for editing an existing product listing.
