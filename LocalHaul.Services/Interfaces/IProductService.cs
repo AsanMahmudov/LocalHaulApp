@@ -37,7 +37,7 @@ namespace Services.Interfaces
         /// </summary>
         /// <param name="product">The Product entity with updated data.</param>
         /// <param name="imageFile">An optional new image file. If null, existing images are retained.</param>
-        Task UpdateProductAsync(Product product, IFormFile? imageFile);
+        Task UpdateProductAsync(Product product, ICollection<IFormFile?> imageFiles);
 
         /// <summary>
         /// Soft-deletes a product listing by setting its IsDeleted flag to true.
