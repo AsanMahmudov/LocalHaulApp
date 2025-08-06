@@ -32,8 +32,7 @@ namespace Asan_CSharp_Web_Project.ViewModels
         /// <summary>
         /// Represents the uploaded image file for the product.
         /// </summary>
-        [Display(Name = "Product Image")]
-        // [Required(ErrorMessage = "An image is required for the product.")] // Uncomment if an image is mandatory for creation
-        public IFormFile ImageFile { get; set; }
+        [Display(Name = "Product Images")] 
+        public ICollection<IFormFile>? ImageFiles { get; set; } 
     }
 }
