@@ -36,12 +36,12 @@ namespace Asan_CSharp_Web_Project.Controllers
         /// <returns>A view displaying the filtered/searched product listings.</returns>
         [HttpGet]
         [HttpGet]
-        public async Task<IActionResult> Index(string searchTerm, Guid? categoryId)
+        public async Task<IActionResult> Index(string searchTerm, Guid? SelectedCategoryId)
         {
             var model = new ProductListModel // Instantiate your ViewModel
-            {
+            {   
                 SearchTerm = searchTerm, // Set the search term from input
-                SelectedCategoryId = categoryId // Set the selected category ID from input
+                SelectedCategoryId = SelectedCategoryId // Set the selected category ID from input
             };
 
             // Fetch all categories for the filter dropdown
@@ -103,16 +103,16 @@ namespace Asan_CSharp_Web_Project.Controllers
         /// </summary>
         /// <returns>A view with the product creation form.</returns>
         [HttpGet]
-            [Authorize] // Only authenticated users can create products
-            public async Task<IActionResult> Create()
+        [Authorize] // Only authenticated users can create products
+        public async Task<IActionResult> Create()
+        {
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            var viewModel = new ProductCreateViewModel
             {
-                var categories = await _categoryService.GetAllCategoriesAsync();
-                var viewModel = new ProductCreateViewModel
-                {
-                    Categories = categories.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = c.Id.ToString(), Text = c.Name })
-                };
-                return View(viewModel);
-            }
+                Categories = categories.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+            };
+            return View(viewModel);
+        }
 
         /// <summary>
         /// Handles the submission of the new product listing form.
@@ -155,87 +155,78 @@ namespace Asan_CSharp_Web_Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //    /// <summary>
-        //    /// Displays the form for editing an existing product listing.
-        //    /// Only the product's seller or an administrator can access this.
-        //    /// </summary>
-        //    /// <param name="id">The unique identifier of the product to edit.</param>
-        //    /// <returns>A view with the product edit form, or an Unauthorized/NotFound result.</returns>
-        //    [HttpGet]
-        //    [Authorize]
-        //    public async Task<IActionResult> Edit(Guid id)
-        //    {
-        //        var product = await _productService.GetProductByIdAsync(id);
 
-        //        if (product == null)
-        //        {
-        //            return NotFound();
-        //        }
+        [HttpGet]
+        [Authorize]
+		[HttpGet]
+		public async Task<IActionResult> Edit(Guid id)
+		{
+			// 1. Fetch the product from the database by its ID.
+			var product = await _productService.GetProductByIdAsync(id);
 
-        //        // Authorization check: Only seller or admin can edit
-        //        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //        if (product.SellerId != currentUserId && !User.IsInRole("Administrator"))
-        //        {
-        //            return Forbid(); // Or Unauthorized()
-        //        }
+			// 2. If no product is found with the given ID, return a 404 Not Found error.
+			if (product == null)
+			{
+				return NotFound();
+			}
 
-        //        // Populate view model from product entity
-        //        var categories = await _categoryService.GetAllCategoriesAsync();
-        //        var viewModel = new ProductEditViewModel // Assuming you have a ProductEditViewModel
-        //        {
-        //            Id = product.Id,
-        //            Title = product.Title,
-        //            Description = product.Description,
-        //            Price = product.Price,
-        //            CategoryId = product.CategoryId,
-        //            Categories = categories.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = c.Id.ToString(), Text = c.Name })
-        //        };
+			// 3. Fetch all categories from the database to populate the dropdown list.
+			var categories = await _categoryService.GetAllCategoriesAsync();
 
-        //        return View(viewModel);
-        //    }
+			// 4. Create a new instance of the ProductEditViewModel and populate its properties.
+			var viewModel = new ProductEditViewModel
+			{
+				Id = product.Id,
+				Title = product.Title,
+				Description = product.Description,
+				Price = product.Price,
+				CategoryId = product.CategoryId,
+				Categories = categories // Assign the list of categories to the view model
+			};
 
-        //    /// <summary>
-        //    /// Handles the submission of the edited product listing form.
-        //    /// Only the product's seller or an administrator can update.
-        //    /// </summary>
-        //    /// <param name="model">The view model containing updated product data and optional new image.</param>
-        //    /// <returns>Redirects to product details on success, or redisplays form with errors.</returns>
-        //    [HttpPost]
-        //    [Authorize]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> Edit(ProductEditViewModel model)
-        //    {
-        //        if (!ModelState.IsValid)
-        //        {
-        //            model.Categories = (await _categoryService.GetAllCategoriesAsync())
-        //                                .Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = c.Id.ToString(), Text = c.Name });
-        //            return View(model);
-        //        }
+			// 5. Return the view, passing the populated view model to it.
+			return View(viewModel);
+        }
 
-        //        var productToUpdate = await _productService.GetProductByIdAsync(model.Id);
-        //        if (productToUpdate == null)
-        //        {
-        //            return NotFound();
-        //        }
 
-        //        // Authorization check: Only seller or admin can edit
-        //        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //        if (productToUpdate.SellerId != currentUserId && !User.IsInRole("Administrator"))
-        //        {
-        //            return Forbid();
-        //        }
 
-        //        // Update product properties (excluding SellerId, PostedDate, IsDeleted)
-        //        productToUpdate.Title = model.Title;
-        //        productToUpdate.Description = model.Description;
-        //        productToUpdate.Price = model.Price;
-        //        productToUpdate.CategoryId = model.CategoryId;
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ProductEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Categories = await _categoryService.GetAllCategoriesAsync();
+                return View(model);
+            }
 
-        //        await _productService.UpdateProductAsync(productToUpdate, model.ImageFile);
+            var productToUpdate = await _productService.GetProductByIdAsync(model.Id);
+            if (productToUpdate == null)
+            {
+                return NotFound();
+            }
 
-        //        TempData["SuccessMessage"] = "Product updated successfully!";
-        //        return RedirectToAction(nameof(Details), new { id = model.Id });
-        //    }
+
+
+            // Authorization check: Only seller or admin can edit
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (productToUpdate.SellerId != currentUserId && !User.IsInRole("Administrator"))
+            {
+                return Forbid();
+            }
+
+            // Update product properties (excluding SellerId, PostedDate, IsDeleted)
+            productToUpdate.Title = model.Title;
+            productToUpdate.Description = model.Description;
+            productToUpdate.Price = model.Price;
+            productToUpdate.CategoryId = model.CategoryId;
+
+            await _productService.UpdateProductAsync(productToUpdate, model.ImageFiles);
+
+            TempData["SuccessMessage"] = "Product updated successfully!";
+            return RedirectToAction(nameof(Details), new { id = model.Id });
+        }
 
         //    /// <summary>
         //    /// Displays a confirmation page for soft-deleting a product listing.
