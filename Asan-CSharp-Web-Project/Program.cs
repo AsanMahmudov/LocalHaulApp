@@ -83,7 +83,7 @@ namespace Asan_CSharp_Web_Project
 
                 app.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Product}/{action=Index}/{id?}");
 
                 app.MapRazorPages();
 
