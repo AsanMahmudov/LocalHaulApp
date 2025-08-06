@@ -1,13 +1,13 @@
 ﻿@using Asan_CSharp_Web_Project.ViewModels
-@model Asan_CSharp_Web_Project.ViewModels.ProductCreateViewModel
+@using Data.Models
+@model ProductCreateViewModel
 
 @{
-    // This partial view does not need its own layout or ViewData["Title"]
-    // as it will be rendered within the context of another view (Index.cshtml)
+    Layout = null;
 }
 
 <form asp-controller="Product" asp-action="Create" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken() @* Essential for security *@
+    @Html.AntiForgeryToken()
 
     <div class="mb-3">
         <label asp-for="Title" class="form-label"></label>
@@ -36,9 +36,9 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="ImageFile" class="form-label"></label>
-        <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" /> @* Accept only image files *@
-        <span asp-validation-for="ImageFile" class="text-danger"></span>
+        <label asp-for="ImageFiles" class="form-label">Product Images</label>
+        <input type="file" asp-for="ImageFiles" class="form-control" accept="image/*" multiple />
+        <span asp-validation-for="ImageFiles" class="text-danger"></span>
     </div>
 
     <div class="modal-footer d-flex justify-content-between">
@@ -46,3 +46,6 @@
         <button type="submit" class="btn btn-primary">Create Product</button>
     </div>
 </form>
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
